@@ -262,16 +262,56 @@
 
         // Funkcja drukowania wyników
         function printResults() {
-            const printContents = document.querySelector('table').outerHTML;
-            const originalContents = document.body.innerHTML;
-
-            document.body.innerHTML = printContents;
-            window.print();
-            document.body.innerHTML = originalContents;
-
-            // Przywróć obsługę interakcji po wydrukowaniu
-            loadResults();
-            setupEventListeners();
+            const table = document.getElementById('glucose-table');
+            const printWindow = window.open('', '_blank');
+            
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Wyniki pomiarów glukozy</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+                        th, td {
+                            border: 1px solid #ddd;
+                            padding: 8px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                        }
+                        .good {
+                            background-color: #e8f5e9;
+                        }
+                        .bad {
+                            background-color: #ffebee;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Wyniki pomiarów glukozy</h1>
+                    <div id="printable">
+                        ${table.outerHTML}
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() {
+                                window.close();
+                            }
+                        }
+                    </script>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
         }
 
         // Funkcja konfigurująca nasłuchiwanie zdarzeń
